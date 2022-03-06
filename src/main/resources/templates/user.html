@@ -49,7 +49,8 @@
 			<thead>
 				<tr>
 					<th>索引</th><th>序號</th><th>姓名</th><th>密碼</th><th>生日</th>
-					<th>年齡</th><th>身高</th><th>體重</th><th>BMI(小數點2位)</th><th>編輯</th><th>刪除</th>
+					<th>年齡</th><th>身高</th><th>體重</th><th>BMI(小數點2位)</th><th>結果判定</th>
+					<th>編輯</th><th>刪除</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -60,12 +61,15 @@
 					<td th:text="${user.password}"></td>
 					<td th:text="${user.birth}"></td>
 					
-					<td>Homework</td>
+					<td th:text="${#dates.year(#dates.createNow()) - #dates.year(user.birth)}">Homework</td>
 					<td th:text="${user.height}"></td>
 					<td th:text="${user.weight}"></td>
-					<td>Homework</td>
+					<!-- #numbers.formatDecimal(值, 至少幾位整數位, 只少幾位小數位) 不足皆補0 -->
+					<td th:with="bmiValue=${user.weight/((user.height/100.0) * (user.height/100.0))}"
+						th:text="${#numbers.formatDecimal(bmiValue, 1, 2)}">Homework</td>
+					<td>正常/過重/過胖</td>
 					<td><a th:href="@{/user/{id}(id=${user.id})}" class="btn btn-success">編輯</a></td>
-					<td></td>
+					<td><a th:href="@{/user/delete/{id}(id=${user.id})}" class="btn btn-danger">刪除</a></td>
 				</tr>
 			</tbody>
 		</table>	

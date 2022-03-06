@@ -43,7 +43,7 @@ public class UserController {
 		return "user";
 	}
 	
-	@GetMapping("/delete/{id}")
+	@GetMapping("/{id}")
 	public String delete(@PathVariable("id") Long id) {
 		userRepository.deleteById(id);
 		return "redirect:../";
