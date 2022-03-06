@@ -45,6 +45,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     //@Query("SELECT u FROM User u WHERE (YEAR(CURRENT_DATE)-YEAR(u.birth)) >= ?1") // ?1 表示方法中第一個參數, 其它用法 LIKE %?1%
     List<User> getUserByAge(Integer age);
     
-    @Query(value = "SELECT count(id) FEOM T_SQL", nativeQuery = true)
+    @Query(value = "SELECT count(id) FROM User", nativeQuery = true)
     long getTotalCount();
 }
