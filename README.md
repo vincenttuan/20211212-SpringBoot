@@ -9,3 +9,6 @@ https://www.thymeleaf.org/<br />
 HTML 命名空間設定：
 &lt;html xmlns:th="http://www.thymeleaf.org"><br />
 <p />
+
+STS如何使用thymeleaf模板自動提示<br />
+https://icode.best/i/97939731623713<p />
