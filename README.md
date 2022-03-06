@@ -12,3 +12,7 @@ HTML 命名空間設定：
 
 STS如何使用thymeleaf模板自動提示<br />
 https://icode.best/i/97939731623713<p />
+
+Bootstrap 4<br />
+&lt;link rel="stylesheet"
+	href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
