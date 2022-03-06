@@ -1,102 +1,49 @@
-package com.example.demo.entity;
+package com.example.demo.repository;
 
 import java.util.Date;
+import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
-import org.hibernate.validator.constraints.Range;
-import org.springframework.format.annotation.DateTimeFormat;
+import com.example.demo.entity.User;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-@Entity
-@Table(name = "User")
-public class User {
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long id;
-	
-	@Column(name = "name", length = 50, nullable = false)
-	@Size(min = 2, max = 50, message = "{user.name.size}")
-	private String name;
-	
-	@Column
-	@NotEmpty(message = "{user.password.empty}")
-	private String password;
-	
-	@Column
-	@Temporal(TemporalType.DATE) // TemporalType.DATE、TemporalType.TIME、TemporalType.TIMESTAMP
-	@NotNull(message = "{user.birth.null}")
-	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	@JsonFormat(pattern = "yyyy-MM-dd")
-	private Date birth;
-	
-	@Column
-	@NotNull(message = "{user.height.null}")
-	@Range(min = 30, max = 300, message = "{user.height.range}")
-	private Integer height;
-	
-	@Column
-	@NotNull(message = "{user.weight.null}")
-	@Range(min = 1, max = 300, message = "{user.weight.range}")
-	private Integer weight;
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public Date getBirth() {
-		return birth;
-	}
-
-	public void setBirth(Date birth) {
-		this.birth = birth;
-	}
-
-	public Integer getHeight() {
-		return height;
-	}
-
-	public void setHeight(Integer height) {
-		this.height = height;
-	}
-
-	public Integer getWeight() {
-		return weight;
-	}
-
-	public void setWeight(Integer weight) {
-		this.weight = weight;
-	}
-	
+/*
+方法命名規則：https://blog.csdn.net/sbin456/article/details/53304148
+1. 查詢方法以 find | read | get 開頭
+2. 涉及條件查詢時，條件的屬性(首字母大寫)用條件關鍵字連結
+3. 若要使用集聯屬性，則屬性之間使用 _ 進行連結
+*/
+@Repository
+public interface UserRepository extends JpaRepository<User, Long> {
+    // 根據 name 來取得 User
+    User getByName(String name);
+    
+    // Where name LIKE ?% AND id < ?
+    List<User> getByNameStartingWithAndIdLessThan(String name, Long id);
+        
+    // Where name LIKE ?% AND id >= ?
+    List<User> getByNameStartingWithAndIdGreaterThanEqual(String name, Long id);
+    
+    // Where id in (?, ?, ?) OR birth < ?
+    List<User> getByIdInOrBirthLessThan(List<Long> ids, Date birth);
+    
+    // Where birth >= ? And birth <= ?
+    List<User> getByBirthGreaterThanEqualAndBirthLessThanEqual(Date birthBegin, Date birthEnd);
+    
+    // Where birth between ?(含) and ?(含)
+    List<User> getByBirthBetween(Date birthBegin, Date birthEnd);
+    
+    // 查詢 id 值最大的 User
+    @Query("SELECT u FROM User u WHERE u.id = (SELECT MAX(u2.id) FROM User u2)")
+    User getMaxIdUser();
+    
+    // 查詢 User + Age > ?
+    @Query("SELECT u FROM User u WHERE (YEAR(CURRENT_DATE)-YEAR(u.birth)) >= :age")
+    //@Query("SELECT u FROM User u WHERE (YEAR(CURRENT_DATE)-YEAR(u.birth)) >= ?1") // ?1 表示方法中第一個參數, 其它用法 LIKE %?1%
+    List<User> getUserByAge(Integer age);
+    
+    @Query(value = "SELECT count(id) FEOM T_SQL", nativeQuery = true)
+    long getTotalCount();
 }
